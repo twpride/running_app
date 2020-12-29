@@ -6,3 +6,5 @@ sudo -u postgres psql
 create database running_app;
 create user running_app_main PASSWORD 'runningisfun!';
 ```
+
++ add node.js, python build packs to heroku
