@@ -1,0 +1,22 @@
+{% load static %}
+{
+  "background_color": "white",
+  "theme_color": "white",
+  "description": "Description",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "{% static 'icon/192.png' %}",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "{% static 'icon/512.png' %}",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "name": "Running App",
+  "short_name": "Running App",
+  "start_url": "../",
+}

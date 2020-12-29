@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="Music Player One" />
+  <meta property="og:description" content="Mobile friendly music streaming app" />
+  <!-- <meta property="og:url" content="https://music-player-1.herokuapp.com/" /> -->
+  <!-- <meta property="og:image" content="https://raw.githubusercontent.com/twpride/music-player-1/main/assets/demo/desktop-adaptive.gif" /> -->
+
+  <link rel="manifest" href="manifest.json">
+  {% csrf_token %}
+  {% load static %}
+ 
+  <link rel="icon" href="{% static "icon/icon.ico" %}" />
+  <title>Running App</title>
+</head>
+
+<body>
+  <div id="root">
+  </div>
+</body>
+
+<link rel="stylesheet" href="{% static "stylesheets/index.css" %}">
+<script type="text/javascript"> window.currentUser = {{ response | safe }} </script>
+<script type="text/javascript" src="{% static "bundles/bundle.js" %}"></script>
+
+
+</html>

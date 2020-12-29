@@ -1,0 +1,11 @@
+node_modules/
+.python-version
+.vscode/
+static/bundles
+
+
+### Django ###
+*.log
+*.pot
+*.pyc
+__pycache__/
