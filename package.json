@@ -28,5 +28,8 @@
       "@babel/preset-env",
       "@babel/preset-react"
     ]
+  },
+  "engines": {
+    "node": "15.x"
   }
 }
