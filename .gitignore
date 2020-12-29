@@ -57,3 +57,10 @@ buck-out/
 
 # CocoaPods
 /ios/Pods/
+
+
+### Django ###
+*.log
+*.pot
+*.pyc
+__pycache__/
