@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import styled from 'styled-components'
 
@@ -7,52 +7,44 @@ const AppDiv = styled.div`
 `;
 
 
-function geoFindMe() {
 
-  const status = document.querySelector('#status');
-  const mapLink = document.querySelector('#map-link');
 
-  mapLink.href = '';
-  mapLink.textContent = '';
+const target = {
+  latitude: 0,
+  longitude: 0
+};
 
-  function success(position) {
-    const latitude = position.coords.latitude;
-    const longitude = position.coords.longitude;
+const options = {
+  enableHighAccuracy: true,
+  timeout: 5000,
+  maximumAge: 0
+};
 
-    status.textContent = '';
-    mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
-    mapLink.textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
-  }
-
-  function error() {
-    status.textContent = 'Unable to retrieve your location';
-  }
-
-  if (!navigator.geolocation) {
-    status.textContent = 'Geolocation is not supported by your browser';
-  } else {
-    status.textContent = 'Locating…';
-    navigator.geolocation.getCurrentPosition(success, error);
-  }
-
+function error(err) {
+  console.warn('ERROR(' + err.code + '): ' + err.message);
 }
-
-
 
 const App = () => {
 
-  useEffect(() => {
-    document.querySelector('#find-me').addEventListener('click', geoFindMe);
+  const [location, setLocation] = useState(null)
+  window.loc = location;
+  function success(loc) {
+    setLocation(loc)
+  }
 
+  useEffect(() => {
+    navigator.geolocation.watchPosition(success, error, options);
   }, [])
 
 
   return (
     <AppDiv>
-      <button id="find-me">Show my location</button><br />
-      <p id="status"></p>
-      <a id="map-link" target="_blank"></a>
-
+      {location && location.coords &&
+        <>
+          <div>{location.coords.longitude}</div>
+          <div>{location.coords.latitude}</div>
+        </>
+      }
     </AppDiv>
   )
 };
