@@ -8,4 +8,5 @@ class Run(model.model):
 
 
 class Waypoint(model.model):
-  
+  run = models.ForeignKey(Run, on_delete=models.CASCADE)
+  accuracy = models.FloatField()
