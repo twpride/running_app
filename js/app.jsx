@@ -4,6 +4,7 @@ import styled from 'styled-components'
 
 const AppDiv = styled.div`
   display:flex;
+  flex-direction:column;
 `;
 
 
@@ -39,7 +40,7 @@ const App = () => {
 
 
   return (
-    <AppDiv>
+    <AppDiv onClick={()=> console.log('clicked')}>
       {location && location.coords &&
         <>
           <div>{location.coords.longitude}</div>
