@@ -8,3 +8,4 @@ create user running_app_main PASSWORD 'runningisfun!';
 ```
 
 + add node.js, python build packs to heroku
++ make sure node engine is specified in package.json
