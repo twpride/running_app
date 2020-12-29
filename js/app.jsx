@@ -30,6 +30,7 @@ const App = () => {
   window.loc = location;
   function success(loc) {
     setLocation(loc)
+    console.log(loc)
   }
 
   useEffect(() => {
