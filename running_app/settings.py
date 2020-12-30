@@ -14,7 +14,6 @@ SECRET_KEY = os.environ.get(
 DEBUG = 'PROD' not in os.environ
 
 ALLOWED_HOSTS = [
-  'music-player-1.herokuapp.com', '127.0.0.1', '0.0.0.0', 'localhost'
 ]
 
 INSTALLED_APPS = [
