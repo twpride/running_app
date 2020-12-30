@@ -38,6 +38,10 @@ const hl = async () => {
   return false;
 };
 
+
+
+const YourApp = () => {
+
 const watch = async () => {
   const hasLocationPermission = await hl();
 
@@ -46,7 +50,8 @@ const watch = async () => {
   }
   Geolocation.watchPosition(
     (position) => {
-      console.log(position);
+      // console.log(position);
+      setLoc(state=>[...state,position])
     },
     (error) => {
       console.log(error);
@@ -66,12 +71,26 @@ const watch = async () => {
   );
 };
 
-const YourApp = () => {
+
+
+
+
+
+
+  const [loc, setLoc] = useState([])
 return (
   <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
     <Text onPress={watch}>
       Try editing me! asdf
       </Text>
+
+    {loc && loc.slice(loc.length-5,loc.length).map(el => (
+      <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+      <Text style={{flex:1}}>{el.coords.accuracy.toFixed(1)}</Text>
+      <Text style={{flex:1}}>{el.coords.longitude}</Text>
+      <Text style={{flex:1}}>{el.coords.latitude}</Text>
+      </View>
+    ))}
   </View>
 );
 }
