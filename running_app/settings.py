@@ -1,5 +1,3 @@
-
-
 import os
 import psycopg2
 import dj_database_url
@@ -17,12 +15,10 @@ ALLOWED_HOSTS = [
 ]
 
 INSTALLED_APPS = [
-  'whitenoise.runserver_nostatic',
-  'django.contrib.staticfiles', # needed for collect static
+  'run_tracker.apps.RunTrackerConfig',
 ]
 
 MIDDLEWARE = [
-  'whitenoise.middleware.WhiteNoiseMiddleware', # host static files
   'django.contrib.sessions.middleware.SessionMiddleware', #for cookies
 ]
 
@@ -44,7 +40,7 @@ DATABASES = {
     dj_database_url.config(
       conn_max_age=600,
       ssl_require=ssl_require,
-      default='postgresql://running_app:running_app_main@localhost/runningisfun!')
+      default='postgresql://running_app_main:runningisfun!@localhost/running_app')
 }
 
 
@@ -58,11 +54,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-STATIC_URL = '/static/' # relative url
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # destination of collectstatic, whitenoise target during prod
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')] #source(s) of collectstatic, whitenoise target during debug
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 
