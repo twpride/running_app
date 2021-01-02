@@ -10,9 +10,13 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@react-native-mapbox-gl/maps": "^8.1.0-rc10",
+    "@voximplant/react-native-foreground-service": "^2.0.0",
     "react": "16.13.1",
     "react-native": "0.63.4",
-    "react-native-geolocation-service": "^5.1.1"
+    "react-native-geolocation-service": "^5.1.1",
+    "react-native-sensors": "^7.0.2",
+    "react-native-simple-compass": "^1.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",

@@ -7,6 +7,8 @@ from django.views.generic import TemplateView
 urlpatterns = [
     # path('admin/', admin.site.urls),
     path('', tracker.root),
+    path('api/run', tracker.run),
+    path('api/run/<int:id>', tracker.run),
     path(
         'manifest.json',
         TemplateView.as_view(template_name="manifest.json",
