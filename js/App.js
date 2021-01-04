@@ -1,42 +1,50 @@
 import React, { useReducer, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Button, ImagePropTypes, Text, View } from 'react-native';
 
 import Tracker from './Tracker'
 
 
 
-const screenD = {
-  TRACKER: Tracker,
+const TabD = {
+  TRACKER: {
+    id: 'TRACKER',
+    comp: Tracker,
+    icon: null,
+    iconName: 'Record',
+    title: null
+  },
+  TAB2: {
+    id: 'TAB2',
+    comp: () => <View><Text>Tab2</Text></View>,
+    icon: null,
+    iconName: 'Tab 2',
+    title: null
+  },
+  TAB3: {
+    id: 'TAB3',
+    comp: () => <View><Text>Tab3</Text></View>,
+    icon: null,
+    iconName: 'Tab 3',
+    title: null
+  },
 }
-
-// export const screen_act = Object.assign({},
-//   ...Object.keys(screenD).map(
-//     k => ({ [k]: k })
-//   )
-// );
-
-// const screenReducer = (state = null, action) => {
-//   Object.freeze(state);
-//   let type;
-//   if (action.type=="POP") {
-
-//   } else if (type = screen_act[action.type]) {
-    
-//     return {...state, type}
-//   } else {
-//     return state
-//   }
-// };
-
-
-
-
-
 
 
 
 export default function App() {
-  const [screen, screenDispatch] = useState('TRACKER')
-  return React.createElement(screenD[screen])
-  // return <Tracker></Tracker>
+  const [tabKey, setTabKey] = useState('TRACKER');
+
+  const Tab = TabD[tabKey].comp;
+  return (
+    <View style={{ flex: 1 }}>
+      <Tab />
+      <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-around' }}>
+        {Object.keys(TabD).map((tk, idx) => (
+          <Button title={TabD[tk].iconName} key={idx}
+            onPress={() => setTabKey(TabD[tk].id)}
+          />
+        ))}
+      </View>
+    </View>
+  )
 }

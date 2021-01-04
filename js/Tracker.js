@@ -4,6 +4,7 @@ import React, { useEffect, useState, useReducer, useContext, createContext } fro
 import * as api from './api'
 import MapboxGL from '@react-native-mapbox-gl/maps';
 import { hasLocationPermission, startForegroundService, stopForegroundService } from './sys'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   Alert,
   Button,
@@ -101,9 +102,56 @@ const trReducer = (state, action) => {
 };
 
 
+const addRun = async (data) => {
+  try {
+    const runD = await AsyncStorage.getItem('runD')
+    if (value !== null) {
+      // value previously stored
+    }
+  } catch (e) {
+    // error reading value
+  }
+}
 
+
+async function init() {
+  try {
+    const runD = await AsyncStorage.getItem('runD')
+    if (runD !== null) {
+      // value previously stored
+      keys = Object.keys(JSON.parse(runD))
+      return parseInt(keys[keys.length - 1]) + 1
+    } else {
+      await AsyncStorage.setItem('runD', JSON.stringify({}))
+      return 1
+    }
+  } catch (e) {
+    // error reading value
+  }
+}
+
+async function printDb() {
+  try {
+    const res = await AsyncStorage.getItem('runD')
+    console.log(JSON.stringify(res))
+  } catch (e) {
+    // error reading value
+  }
+}
 
 export default function Tracker() {
+  const [watchId, setWatchId] = useState(null)
+  const [runId, setRunId] = useState(null)
+  const [runTime, setRunTime] = useState(0)
+  const [ori, setOri] = useState(0)
+
+  useEffect(() => {
+    setRunId(init())
+    RNSimpleCompass.start(22.5, setOri); // first arg is deg throttling thresh
+    getPos()
+  }, [])
+
+
   const [tr, trDispatch] = useReducer(trReducer,
     {
       cur: null,
@@ -113,10 +161,12 @@ export default function Tracker() {
         coordinates: []
       }
     })
-  const [watchId, setWatchId] = useState(null)
-  const [ori, setOri] = useState(0)
 
-  const getPos = () => {
+  const getPos = async () => {
+    const perm = await hasLocationPermission()
+    // if (! perm) {
+    //   return;
+    // }
     Geolocation.getCurrentPosition(
       (wpt) => {
         trDispatch({ type: tr_act.RX_POS, wpt })
@@ -138,49 +188,64 @@ export default function Tracker() {
     )
   };
 
-
   const watch = async () => {
-    trDispatch({ type: tr_act.START_RUN })
-    if (! await hasLocationPermission()) {
-      return;
-    }
+
     await startForegroundService();
+    trDispatch({ type: tr_act.START_RUN })
+
     setWatchId(
-      Geolocation.watchPosition(
-        (wpt) => {
-          trDispatch({ type: tr_act.RX_WPT, wpt })
-        },
-        (error) => {
-          console.log(error);
-        },
-        {
-          accuracy: {
-            android: 'high',
-            ios: 'bestForNavigation',
+      [
+        setInterval(function () {
+          setRunTime(state => state + 1)
+        }, 1000),
+        Geolocation.watchPosition(
+          (wpt) => {
+            trDispatch({ type: tr_act.RX_WPT, wpt })
           },
-          enableHighAccuracy: true,
-          distanceFilter: 0,
-          interval: 5000,
-          fastestInterval: 2000,
-          forceRequestLocation: true,
-          showLocationDialog: true,
-        },
-      )
+          (error) => {
+            console.log(error);
+          },
+          {
+            accuracy: {
+              android: 'high',
+              ios: 'bestForNavigation',
+            },
+            enableHighAccuracy: true,
+            distanceFilter: 0,
+            interval: 5000,
+            fastestInterval: 2000,
+            forceRequestLocation: true,
+            showLocationDialog: true,
+          },
+        )
+      ]
     );
   };
 
   const stopWatch = () => {
     if (watchId !== null) {
       stopForegroundService();
-      Geolocation.clearWatch(watchId);
+      clearInterval(watchId[0])
+      Geolocation.clearWatch(watchId[1]);
       setWatchId(null)
       console.log(tr.distance, 'dist')
-      api.addRun(tr.waypoints)
+      // api.addRun(tr.waypoints)
+      addRun()
     }
   };
 
-
-
+  const addRun = async () => {
+    const data = {
+      [runId]: {
+        waypoints: tr.waypoints,
+        distance: tr.distance,
+        time: runTime
+      }
+    }
+    try {
+      await AsyncStorage.setItem('runD', JSON.stringify(data))
+    } catch (e) { }
+  }
 
   const update = () => {
     const wpt = {
@@ -197,16 +262,10 @@ export default function Tracker() {
   }
 
 
-  useEffect(() => {
-
-    RNSimpleCompass.start(22.5, setOri); // first arg is deg throttlig thresh
-
-    getPos()
-  }, [])
-
   return (
     <TrackerContext.Provider value={{ tr, trDispatch }}>
       <View style={styles.page}>
+        <Text>{runTime}</Text>
         <View style={styles.container}>
           <MapboxGL.MapView style={styles.map} pitchEnabled>
             <MapboxGL.Camera
@@ -222,6 +281,7 @@ export default function Tracker() {
           </MapboxGL.MapView>
         </View>
         <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-around' }}>
+          <Button title='printdb' onPress={printDb} />
           <Button title='start' onPress={watch} />
           <Button title='stop' onPress={stopWatch} />
           <Button title='update' onPress={update} />
