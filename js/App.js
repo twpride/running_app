@@ -2,6 +2,7 @@ import React, { useReducer, useState } from 'react';
 import { Button, ImagePropTypes, Text, View } from 'react-native';
 
 import Tracker from './Tracker'
+import History from './History'
 
 
 
@@ -13,11 +14,11 @@ const TabD = {
     iconName: 'Record',
     title: null
   },
-  TAB2: {
-    id: 'TAB2',
-    comp: () => <View><Text>Tab2</Text></View>,
+  HISTORY: {
+    id: 'HISTORY',
+    comp: History,
     icon: null,
-    iconName: 'Tab 2',
+    iconName: 'History',
     title: null
   },
   TAB3: {
@@ -32,11 +33,13 @@ const TabD = {
 
 
 export default function App() {
-  const [tabKey, setTabKey] = useState('TRACKER');
+
+  
+  const [tabKey, setTabKey] = useState('HISTORY');
 
   const Tab = TabD[tabKey].comp;
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, alignItems:'center'}}>
       <Tab />
       <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-around' }}>
         {Object.keys(TabD).map((tk, idx) => (

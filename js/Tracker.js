@@ -1,10 +1,11 @@
 import Geolocation from 'react-native-geolocation-service';
 import RNSimpleCompass from 'react-native-simple-compass';
 import React, { useEffect, useState, useReducer, useContext, createContext } from 'react';
-import * as api from './api'
+import * as api from './util/api'
 import MapboxGL from '@react-native-mapbox-gl/maps';
-import { hasLocationPermission, startForegroundService, stopForegroundService } from './sys'
+import { hasLocationPermission, startForegroundService, stopForegroundService } from './util/sys'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Map from './Map'
 import {
   Alert,
   Button,
@@ -19,7 +20,7 @@ import {
   View,
 } from 'react-native';
 
-import { coord } from './testroute'
+import { coord } from './util/testroute'
 
 
 const legend = {
@@ -102,23 +103,10 @@ const trReducer = (state, action) => {
 };
 
 
-const addRun = async (data) => {
-  try {
-    const runD = await AsyncStorage.getItem('runD')
-    if (value !== null) {
-      // value previously stored
-    }
-  } catch (e) {
-    // error reading value
-  }
-}
-
-
-async function init() {
+async function getNextRunId() {
   try {
     const runD = await AsyncStorage.getItem('runD')
     if (runD !== null) {
-      // value previously stored
       keys = Object.keys(JSON.parse(runD))
       return parseInt(keys[keys.length - 1]) + 1
     } else {
@@ -146,9 +134,13 @@ export default function Tracker() {
   const [ori, setOri] = useState(0)
 
   useEffect(() => {
-    setRunId(init())
+    console.log('trackerbitch')
+    getNextRunId().then(id => {
+      console.log('delay')
+      setRunId(id)
+    })
     RNSimpleCompass.start(22.5, setOri); // first arg is deg throttling thresh
-    getPos()
+    center()
   }, [])
 
 
@@ -162,30 +154,32 @@ export default function Tracker() {
       }
     })
 
-  const getPos = async () => {
-    const perm = await hasLocationPermission()
-    // if (! perm) {
-    //   return;
-    // }
-    Geolocation.getCurrentPosition(
-      (wpt) => {
-        trDispatch({ type: tr_act.RX_POS, wpt })
-      },
-      (error) => {
-        console.log(error);
-      },
-      {
-        accuracy: {
-          android: 'high',
-          ios: 'bestForNavigation',
+  const center = () => {
+    hasLocationPermission().then(perm => {
+      if (!perm) {
+        return;
+      }
+      Geolocation.getCurrentPosition(
+        (wpt) => {
+          trDispatch({ type: tr_act.RX_POS, wpt })
         },
-        enableHighAccuracy: true,
-        distanceFilter: 0,
-        showLocationDialog: true,
-        forceRequestLocation: true,
-        maximumAge: 0
-      },
-    )
+        (error) => {
+          console.log(error);
+        },
+        {
+          accuracy: {
+            android: 'high',
+            ios: 'bestForNavigation',
+          },
+          enableHighAccuracy: true,
+          distanceFilter: 0,
+          showLocationDialog: true,
+          forceRequestLocation: true,
+          maximumAge: 0
+        },
+      )
+    }
+    );
   };
 
   const watch = async () => {
@@ -228,7 +222,6 @@ export default function Tracker() {
       clearInterval(watchId[0])
       Geolocation.clearWatch(watchId[1]);
       setWatchId(null)
-      console.log(tr.distance, 'dist')
       // api.addRun(tr.waypoints)
       addRun()
     }
@@ -239,11 +232,14 @@ export default function Tracker() {
       [runId]: {
         waypoints: tr.waypoints,
         distance: tr.distance,
-        time: runTime
+        time: runTime,
+        // startTime: tr.waypoints[0][6]
+        startTime: new Date('January 5, 2021').getTime()
       }
     }
     try {
-      await AsyncStorage.setItem('runD', JSON.stringify(data))
+      await AsyncStorage.mergeItem('runD', JSON.stringify(data))
+      setRunId(id => id + 1)
     } catch (e) { }
   }
 
@@ -261,35 +257,31 @@ export default function Tracker() {
     trDispatch({ type: tr_act.RX_WPT, wpt })
   }
 
+  const cameraProps = {
+    defaultSettings: { zoomLevel: 18 },
+    centerCoordinate: tr.cur && tr.cur.slice(4, 6),
+    heading: ori + 25,
+    animationDuration: 500
+  }
 
   return (
     <TrackerContext.Provider value={{ tr, trDispatch }}>
-      <View style={styles.page}>
         <Text>{runTime}</Text>
-        <View style={styles.container}>
-          <MapboxGL.MapView style={styles.map} pitchEnabled>
-            <MapboxGL.Camera
-              defaultSettings={{ zoomLevel: 18 }}
-              centerCoordinate={tr.cur && tr.cur.slice(4, 6)}
-              heading={ori + 25}
-              animationDuration={500}
-            />
-            <MapboxGL.ShapeSource id="source" shape={tr.shape} >
-              <MapboxGL.LineLayer id='layer1' style={{ lineColor: 'red' }} />
-              <MapboxGL.CircleLayer id='layer2' style={{ circleColor: 'blue', circleRadius: 2 }} />
-            </MapboxGL.ShapeSource>
-          </MapboxGL.MapView>
+        <View style={{height: '80%', width: '100%'}} >
+          {/* <Map center={tr.cur && tr.cur.slice(4, 6)} shape={tr.shape} ori={ori} /> */}
         </View>
         <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-around' }}>
           <Button title='printdb' onPress={printDb} />
           <Button title='start' onPress={watch} />
           <Button title='stop' onPress={stopWatch} />
           <Button title='update' onPress={update} />
+        </View>
+        <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-around' }}>
           <Button title='man stop' onPress={() => {
             console.log(tr.distance, 'dist')
-            api.addRun(tr.waypoints)
+            // api.addRun(tr.waypoints)
           }} />
-          {/* <Button title='center' onPress={getPos} /> */}
+          <Button title='center' onPress={center} />
           <Button title='man start' onPress={() => {
             console.log(coord[0][0], 'heree')
             trDispatch({
@@ -302,30 +294,12 @@ export default function Tracker() {
             })
             trDispatch({ type: tr_act.START_RUN })
           }} />
+          <Button title='clear' onPress={() => AsyncStorage.clear()} />
+          <Button title='runid' onPress={() => console.log(runId, 'runid')} />
         </View>
-      </View>
     </TrackerContext.Provider>
   );
 
 }
-
-
-
-
-
-const styles = StyleSheet.create({
-  page: {
-    flex: 1,
-  },
-  container: {
-    height: '80%',
-    width: '100%',
-    backgroundColor: 'blue',
-  },
-  map: {
-    flex: 1,
-  },
-});
-
 
 
