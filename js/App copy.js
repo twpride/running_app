@@ -1,6 +1,5 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { useReducer, useState } from 'react';
 import { Button, ImagePropTypes, Text, View } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Tracker from './Tracker'
 import History from './History'
@@ -13,14 +12,16 @@ import Tab1 from './Tab1'
 const TabD = {
   TRACKER: {
     id: 'TRACKER',
-    comp: Tracker,
+    // comp: Tracker,
+    comp: Tab1,
     icon: null,
     iconName: 'Record',
     title: null
   },
   HISTORY: {
     id: 'HISTORY',
-    comp: History,
+    // comp: History,
+    comp: Tab2,
     icon: null,
     iconName: 'History',
     title: null
@@ -38,23 +39,13 @@ const TabD = {
 
 export default function App() {
 
-  const [tabKey, setTabKey] = useState('TRACKER');
-  const [runD, setRunD] = useState([])
-  RunDContext = createContext({})
-
-  useEffect(() => {
-    AsyncStorage.getItem('runD').then(str => {
-      setRunD(JSON.parse(str))
-    })
-  }, [])
+  
+  const [tabKey, setTabKey] = useState('HISTORY');
 
   const Tab = TabD[tabKey].comp;
-
   return (
-    <View style={{ flex: 1, alignItems: 'center' }}>
-      <RunDContext.Provider value={{runD, setRunD}}>
-        <Tab></Tab>
-      </RunDContext.Provider>
+    <View style={{ flex: 1, alignItems:'center'}}>
+      <Tab />
       <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-around' }}>
         {Object.keys(TabD).map((tk, idx) => (
           <Button title={TabD[tk].iconName} key={idx}

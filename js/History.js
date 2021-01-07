@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Button, Text, View, TouchableHighlight } from 'react-native';
-
 
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -9,88 +8,82 @@ import Svg, {
   Line, Rect, G
 } from 'react-native-svg';
 
+
+
+
 const MS_IN_DAY = 24 * 60 * 60 * 1000;
 const TODAY = new Date();
 const START_DATE_MS = TODAY.setHours(0, 0, 0, 0) - (TODAY.getDay() + 51 * 7) * MS_IN_DAY
 
-import { Dimensions } from 'react-native';
-const windowWidth = Dimensions.get('window').width;
-console.log(windowWidth, "ww")
+const WEEKS = 52;
 
-var x = new Array(52);
+const COLORS = ['lightgrey', 'green']
+const SIZE = 6;
+const PITCH = 7.3;
 
-for (var i = 0; i < x.length; i++) {
-  x[i] = Array(7).fill('lightgrey');
+var initBuckets = new Array(WEEKS);
+for (var i = 0; i < initBuckets.length; i++) {
+  initBuckets[i] = Array(7).fill(0);
 }
+
 
 function getIndex(date_ms) {
   const idx = Math.floor((date_ms - START_DATE_MS) / MS_IN_DAY)
   return [Math.floor(idx / 7), idx % 7]
 }
 
-async function wrapper() {
-  // const resp = await AsyncStorage.getItem('runD');
-  return 1;
-}
 
-const History = ({ }) => {
-  const [runD, setRunD] = useState()
 
-  // const [sc, setSc] = useState([null,null])
-  const [sc, setSc] = useState(x)
+
+export default function History() {
+
+  const { runD, setRunD } = useContext(RunDContext)
+  const [buckets, setBuckets] = useState(null)
 
   useEffect(() => {
-
-    (async () => {
-      console.log('before await');
-      const resp = await AsyncStorage.getItem('runD');
-      // const resp = await wrapper()
-      console.log('after');
-      
-      const obj = JSON.parse(resp);
-      console.log(obj);
-      setRunD(obj)
-    })();
-
-
-
+    setBuckets(
+      Object.values(runD).reduce(
+        (acc, ele) => {
+          const [i, j] = getIndex(ele.startTime)
+          acc[i][j] = 1
+          return acc
+        }, initBuckets
+      )
+    )
   }, [])
-  const ll = 6;
-  const pitch = 7.3;
+
   return (
     <>
-      <Text>somehting</Text>
       <Svg height="600" width="380"
       // onStartShouldSetResponder={
       //   e => console.log(e.nativeEvent)
       // }
       >
-        {[...Array(52)].map((eli, i) => (
-          [...Array(7)].map((elj, j) => (
+        {buckets && buckets.map((eli, i) => (
+          eli.map((elj, j) => (
             <Rect
               key={i.toString() + j.toString()}
-              x={i * pitch}
-              y={j * pitch}
+              x={i * PITCH}
+              y={j * PITCH}
 
-              height={ll}
-              width={ll}
+              height={SIZE}
+              width={SIZE}
 
-              fill={i == 51 ? 'green' : sc[i][j]}
+              fill={COLORS[buckets[i][j]]}
             />
           ))
         )
         )}
       </Svg>
-
-      {runD && Object.keys(runD).map((key, idx) => (
-        <Text key={idx}>{runD[key].distance} {runD[key].time} </Text>
-      )
-      )}
+      {
+        runD && Object.keys(runD).map((key, idx) => (
+          <Text key={idx}>{runD[key].distance} {runD[key].time} </Text>
+        )
+        )
+      }
     </>
   );
 }
 
 
 
-
-export default History;

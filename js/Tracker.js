@@ -1,6 +1,6 @@
 import Geolocation from 'react-native-geolocation-service';
 import RNSimpleCompass from 'react-native-simple-compass';
-import React, { useEffect, useState, useReducer, useContext, createContext } from 'react';
+import React, { useEffect, useState, useReducer} from 'react';
 import * as api from './util/api'
 import MapboxGL from '@react-native-mapbox-gl/maps';
 import { hasLocationPermission, startForegroundService, stopForegroundService } from './util/sys'
@@ -39,7 +39,6 @@ function distance(lon1, lat1, lon2, lat2) {
   var a = 0.5 - c((lat2 - lat1) * p) / 2 +
     c(lat1 * p) * c(lat2 * p) *
     (1 - c((lon2 - lon1) * p)) / 2;
-
   return 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
 }
 
@@ -48,7 +47,6 @@ const token = "pk.eyJ1IjoiaG93YXJkaHdhbmciLCJhIjoiY2tqOXByeW1uMDM4ZTJxbzF1NDJueT
 MapboxGL.setAccessToken(token);
 MapboxGL.setTelemetryEnabled(false);
 
-const TrackerContext = createContext()
 
 export const tr_act = {
   SET_LOAD_STOP: 'SET_LOAD_STOP',
@@ -134,13 +132,19 @@ export default function Tracker() {
   const [ori, setOri] = useState(0)
 
   useEffect(() => {
-    console.log('trackerbitch')
-    getNextRunId().then(id => {
-      console.log('delay')
-      setRunId(id)
-    })
+    getNextRunId().then(id => setRunId(id))
     RNSimpleCompass.start(22.5, setOri); // first arg is deg throttling thresh
     center()
+
+    return () => {
+      RNSimpleCompass.stop();
+      if (watchId !== null) {
+        clearInterval(watchId[0])
+        Geolocation.stopObserving()
+        // Geolocation.clearWatch(watchId[1]);
+        setWatchId(null)
+      }
+    }
   }, [])
 
 
@@ -214,6 +218,8 @@ export default function Tracker() {
         )
       ]
     );
+
+
   };
 
   const stopWatch = () => {
@@ -234,7 +240,7 @@ export default function Tracker() {
         distance: tr.distance,
         time: runTime,
         // startTime: tr.waypoints[0][6]
-        startTime: new Date('January 5, 2021').getTime()
+        startTime: new Date('December 27, 2020').getTime()
       }
     }
     try {
@@ -265,39 +271,38 @@ export default function Tracker() {
   }
 
   return (
-    <TrackerContext.Provider value={{ tr, trDispatch }}>
-        <Text>{runTime}</Text>
-        <View style={{height: '80%', width: '100%'}} >
-          {/* <Map center={tr.cur && tr.cur.slice(4, 6)} shape={tr.shape} ori={ori} /> */}
-        </View>
-        <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-around' }}>
-          <Button title='printdb' onPress={printDb} />
-          <Button title='start' onPress={watch} />
-          <Button title='stop' onPress={stopWatch} />
-          <Button title='update' onPress={update} />
-        </View>
-        <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-around' }}>
-          <Button title='man stop' onPress={() => {
-            console.log(tr.distance, 'dist')
-            // api.addRun(tr.waypoints)
-          }} />
-          <Button title='center' onPress={center} />
-          <Button title='man start' onPress={() => {
-            console.log(coord[0][0], 'heree')
-            trDispatch({
-              type: tr_act.RX_POS, wpt: {
-                coords: {
-                  speed: 0, heading: 0, altitude: 0, accuracy: 0,
-                  longitude: coord[0][0], latitude: coord[0][1]
-                }
+    <>
+      <Text>{runTime}</Text>
+      <View style={{ height: '80%', width: '100%' }} >
+        <Map center={tr.cur && tr.cur.slice(4, 6)} shape={tr.shape} ori={ori} />
+      </View>
+      <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-around' }}>
+        <Button title='printdb' onPress={printDb} />
+        <Button title='start' onPress={watch} />
+        <Button title='stop' onPress={stopWatch} />
+        <Button title='update' onPress={update} />
+      </View>
+      <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-around' }}>
+        <Button title='man stop' onPress={() => {
+          console.log(tr.distance, 'dist')
+          // api.addRun(tr.waypoints)
+        }} />
+        <Button title='center' onPress={center} />
+        <Button title='man start' onPress={() => {
+          trDispatch({
+            type: tr_act.RX_POS, wpt: {
+              coords: {
+                speed: 0, heading: 0, altitude: 0, accuracy: 0,
+                longitude: coord[0][0], latitude: coord[0][1]
               }
-            })
-            trDispatch({ type: tr_act.START_RUN })
-          }} />
-          <Button title='clear' onPress={() => AsyncStorage.clear()} />
-          <Button title='runid' onPress={() => console.log(runId, 'runid')} />
-        </View>
-    </TrackerContext.Provider>
+            }
+          })
+          trDispatch({ type: tr_act.START_RUN })
+        }} />
+        <Button title='clear' onPress={() => AsyncStorage.clear()} />
+        <Button title='runid' onPress={() => console.log(runId, 'runid')} />
+      </View>
+    </>
   );
 
 }
