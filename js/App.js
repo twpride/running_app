@@ -41,6 +41,7 @@ export default function App() {
   const [tabKey, setTabKey] = useState('TRACKER');
   const [runD, setRunD] = useState([])
   RunDContext = createContext({})
+  const [tt, setTt] = useState()
 
   useEffect(() => {
     AsyncStorage.getItem('runD').then(str => {
@@ -52,16 +53,21 @@ export default function App() {
 
   return (
     <View style={{ flex: 1, alignItems: 'center' }}>
-      <RunDContext.Provider value={{runD, setRunD}}>
-        <Tab></Tab>
-      </RunDContext.Provider>
+      <Tab {...{ runD, setRunD }}></Tab>
       <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-around' }}>
         {Object.keys(TabD).map((tk, idx) => (
           <Button title={TabD[tk].iconName} key={idx}
             onPress={() => setTabKey(TabD[tk].id)}
           />
         ))}
+        <Button title='test' 
+          onPress={() => setTt(state=>{
+            console.log('statecylcle')
+            console.log(state)
+            return "activated"
+          })}
+        />
       </View>
-    </View>
+    </View >
   )
 }

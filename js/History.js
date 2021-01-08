@@ -35,9 +35,8 @@ function getIndex(date_ms) {
 
 
 
-export default function History() {
+export default function History({runD}) {
 
-  const { runD, setRunD } = useContext(RunDContext)
   const [buckets, setBuckets] = useState(null)
 
   useEffect(() => {
