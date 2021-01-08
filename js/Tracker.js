@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 
 import { coord } from './util/testroute'
-
+import prettyFormat from 'pretty-format'
 
 const legend = {
   speed: 0,
@@ -99,12 +99,16 @@ async function getNextRunId() {
   }
 }
 
+
+
 async function printDb() {
   try {
     const res = await AsyncStorage.getItem('runD')
-    console.log(JSON.stringify(res))
+    // console.log(JSON.stringify(JSON.parse(res),null,2))
+    console.log(prettyFormat(JSON.parse(res),{maxDepth:2}))
+    // console.dir(JSON.parse(res),{depth:1})
   } catch (e) {
-    // error reading value
+    console.log(e)
   }
 }
 
