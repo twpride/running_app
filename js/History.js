@@ -1,22 +1,16 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Text, View, TouchableHighlight } from 'react-native';
-
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Svg, {
   Line, Rect, G
 } from 'react-native-svg';
 
-
-
-
 const MS_IN_DAY = 24 * 60 * 60 * 1000;
 const TODAY = new Date();
 const START_DATE_MS = TODAY.setHours(0, 0, 0, 0) - (TODAY.getDay() + 51 * 7) * MS_IN_DAY
 
 const WEEKS = 52;
-
 const COLORS = ['lightgrey', 'green']
 const SIZE = 6;
 const PITCH = 7.3;

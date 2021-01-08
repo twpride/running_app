@@ -39,13 +39,14 @@ const TabD = {
 export default function App() {
 
   const [tabKey, setTabKey] = useState('TRACKER');
-  const [runD, setRunD] = useState([])
-  RunDContext = createContext({})
-  const [tt, setTt] = useState()
+  const [runD, setRunD] = useState()
 
   useEffect(() => {
     AsyncStorage.getItem('runD').then(str => {
-      setRunD(JSON.parse(str))
+
+      setRunD(JSON.parse(str) || {}) 
+      // runD is Object rather than Array because 
+      // async storage does not have built in array push method, only obj merge
     })
   }, [])
 

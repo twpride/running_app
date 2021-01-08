@@ -7,16 +7,8 @@ import { hasLocationPermission, startForegroundService, stopForegroundService } 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Map from './Map'
 import {
-  Alert,
   Button,
-  Linking,
-  PermissionsAndroid,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Switch,
   Text,
-  ToastAndroid,
   View,
 } from 'react-native';
 
@@ -59,6 +51,13 @@ const trReducer = (state, action) => {
   Object.freeze(state);
 
   switch (action.type) {
+    case tr_act.START_RUN:
+      return {
+        ...state,
+        distance: 0,
+        waypoints: [Object.assign([], state.cur, { 6: Date.now() })],
+        shape: [state.cur.slice(4, 6)]
+      }
     case tr_act.RX_WPT:
       const cur = [...Object.values(action.wpt.coords), action.wpt.timestamp];
       const coordinate = [action.wpt.coords.longitude, action.wpt.coords.latitude];
@@ -66,11 +65,8 @@ const trReducer = (state, action) => {
         ...state,
         distance: state.distance + distance(state.cur[4], state.cur[5], ...coordinate),
         waypoints: [...state.waypoints, cur],
-        cur,
-        shape: {
-          ...state.shape,
-          coordinates: [...state.shape.coordinates, coordinate]
-        }
+        shape: [...state.shape, coordinate],
+        cur
       }
     case tr_act.RX_POS:
       return {
@@ -80,20 +76,7 @@ const trReducer = (state, action) => {
       return {
         ...state,
         waypoints: [],
-        shape: {
-          ...state.shape,
-          coordinates: []
-        }
-      }
-    case tr_act.START_RUN:
-      return {
-        ...state,
-        distance: 0,
-        waypoints: [Object.assign([], state.cur, { 6: Date.now() })],
-        shape: {
-          ...state.shape,
-          coordinates: [state.cur.slice(4, 6)]
-        }
+        shape: []
       }
     default:
       return state;
@@ -150,15 +133,7 @@ export default function Tracker({ setRunD }) {
   }, [])
 
 
-  const [tr, trDispatch] = useReducer(trReducer,
-    {
-      cur: null,
-      waypoints: [],
-      shape: {
-        type: "LineString",
-        coordinates: []
-      }
-    })
+  const [tr, trDispatch] = useReducer(trReducer,{})
 
   const center = () => {
     hasLocationPermission().then(perm => {
@@ -225,7 +200,6 @@ export default function Tracker({ setRunD }) {
   };
 
   const stopWatch = () => {
-    console.log('watch', watchId)
     if (watchId !== null) {
       stopForegroundService();
       clearInterval(watchId[0])
@@ -243,25 +217,14 @@ export default function Tracker({ setRunD }) {
         distance: tr.distance,
         time: runTime,
         // startTime: tr.waypoints[0][6]
-        // startTime: new Date('December 13, 2020').getTime()
-        // startTime: new Date('December 13, 2020').getTime()
-        startTime: new Date('January 7, 2021').getTime()
+        startTime: new Date('January 1, 2021').getTime()
       }
     }
     try {
-        console.log("before")
-      setRunD(state => {
-        console.log(state, "hiiiiiiii")
-        if (state) {
-          return [...state, data]
-        } else {
-          return [data]
-        }
-      })
-      console.log("after")
-      await AsyncStorage.mergeItem('runD', JSON.stringify(data))
+      setRunD(state => ({ ...state, ...data }))
       setRunId(id => id + 1)
-    } catch (e) { 
+      await AsyncStorage.mergeItem('runD', JSON.stringify(data))
+    } catch (e) {
       console.log(e)
     }
   }
@@ -280,14 +243,7 @@ export default function Tracker({ setRunD }) {
     trDispatch({ type: tr_act.RX_WPT, wpt })
   }
 
-  const cameraProps = {
-    defaultSettings: { zoomLevel: 18 },
-    centerCoordinate: tr.cur && tr.cur.slice(4, 6),
-    heading: ori + 25,
-    animationDuration: 500
-  }
 
-  console.log('renderprint')
   return (
     <>
       <Text>{runTime}</Text>
@@ -295,17 +251,17 @@ export default function Tracker({ setRunD }) {
         <Map center={tr.cur && tr.cur.slice(4, 6)} shape={tr.shape} ori={ori} />
       </View>
       <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-around' }}>
-        <Button title='printdb' onPress={printDb} />
         <Button title='start' onPress={watch} />
         <Button title='stop' onPress={stopWatch} />
-        <Button title='update' onPress={update} />
+        <Button title='center' onPress={center} />
       </View>
       <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-around' }}>
+        <Button title='update' onPress={update} />
         <Button title='man stop' onPress={() => {
           console.log(tr.distance, 'dist')
           // api.addRun(tr.waypoints)
+          addRun()
         }} />
-        <Button title='center' onPress={center} />
         <Button title='man start' onPress={() => {
           trDispatch({
             type: tr_act.RX_POS, wpt: {
@@ -318,6 +274,7 @@ export default function Tracker({ setRunD }) {
           trDispatch({ type: tr_act.START_RUN })
         }} />
         <Button title='clear' onPress={() => AsyncStorage.clear()} />
+        <Button title='printdb' onPress={printDb} />
         <Button title='runid' onPress={() => console.log(runId, 'runid')} />
       </View>
     </>

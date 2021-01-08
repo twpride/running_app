@@ -10,10 +10,19 @@ const Map = ({ center, shape, ori }) => {
         heading={ori + 25}
         animationDuration={500}
       />
-      <MapboxGL.ShapeSource id="source" shape={shape} >
-        <MapboxGL.LineLayer id='layer1' style={{ lineColor: 'green' }} />
-        <MapboxGL.CircleLayer id='layer2' style={{ circleColor: 'green', circleRadius: 2 }} />
-      </MapboxGL.ShapeSource>
+      {shape &&
+        <MapboxGL.ShapeSource id="source"
+          shape={
+            {
+              type: "LineString",
+              coordinates: shape
+            }
+          }
+        >
+          <MapboxGL.LineLayer id='layer1' style={{ lineColor: 'green' }} />
+          <MapboxGL.CircleLayer id='layer2' style={{ circleColor: 'green', circleRadius: 2 }} />
+        </MapboxGL.ShapeSource>
+      }
     </MapboxGL.MapView>
   );
 }
