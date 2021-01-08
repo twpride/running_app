@@ -1,6 +1,6 @@
 import Geolocation from 'react-native-geolocation-service';
 import RNSimpleCompass from 'react-native-simple-compass';
-import React, { useEffect, useState, useReducer} from 'react';
+import React, { useEffect, useState, useReducer } from 'react';
 import * as api from './util/api'
 import MapboxGL from '@react-native-mapbox-gl/maps';
 import { hasLocationPermission, startForegroundService, stopForegroundService } from './util/sys'
@@ -125,13 +125,15 @@ async function printDb() {
   }
 }
 
-export default function Tracker({setRunD}) {
+export default function Tracker({ setRunD }) {
   const [watchId, setWatchId] = useState(null)
   const [runId, setRunId] = useState(null)
   const [runTime, setRunTime] = useState(0)
   const [ori, setOri] = useState(0)
 
   useEffect(() => {
+
+
     getNextRunId().then(id => setRunId(id))
     RNSimpleCompass.start(22.5, setOri); // first arg is deg throttling thresh
     center()
@@ -241,13 +243,21 @@ export default function Tracker({setRunD}) {
         time: runTime,
         // startTime: tr.waypoints[0][6]
         // startTime: new Date('December 13, 2020').getTime()
-        startTime: new Date('December 13, 2020').getTime()
+        // startTime: new Date('December 13, 2020').getTime()
+        startTime: new Date('January 7, 2021').getTime()
       }
     }
     try {
-      // setRunD(state => {
-      //   console.log(state,"hiiiiiiii")
-      //   return [...state,'asdfasdgs']})
+        console.log(state, "before")
+      setRunD(state => {
+        console.log(state, "hiiiiiiii")
+        if (state) {
+          return [...state, data]
+        } else {
+          return [data]
+        }
+      })
+      console.log(state, "after")
       await AsyncStorage.mergeItem('runD', JSON.stringify(data))
       setRunId(id => id + 1)
     } catch (e) { }
