@@ -225,6 +225,7 @@ export default function Tracker({ setRunD }) {
   };
 
   const stopWatch = () => {
+    console.log('watch', watchId)
     if (watchId !== null) {
       stopForegroundService();
       clearInterval(watchId[0])
@@ -248,7 +249,7 @@ export default function Tracker({ setRunD }) {
       }
     }
     try {
-        console.log(state, "before")
+        console.log("before")
       setRunD(state => {
         console.log(state, "hiiiiiiii")
         if (state) {
@@ -257,10 +258,12 @@ export default function Tracker({ setRunD }) {
           return [data]
         }
       })
-      console.log(state, "after")
+      console.log("after")
       await AsyncStorage.mergeItem('runD', JSON.stringify(data))
       setRunId(id => id + 1)
-    } catch (e) { }
+    } catch (e) { 
+      console.log(e)
+    }
   }
 
   const update = () => {

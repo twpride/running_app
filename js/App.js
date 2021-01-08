@@ -61,11 +61,7 @@ export default function App() {
           />
         ))}
         <Button title='test' 
-          onPress={() => setTt(state=>{
-            console.log('statecylcle')
-            console.log(state)
-            return "activated"
-          })}
+          onPress={() => console.log(runD)}
         />
       </View>
     </View >
