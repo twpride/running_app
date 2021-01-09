@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { Button, ImagePropTypes, Text, View } from 'react-native';
+import { Button, ImagePropTypes, Text, View, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Tracker from './Tracker'
@@ -38,24 +38,32 @@ const TabD = {
 
 export default function App() {
 
-  const [tabKey, setTabKey] = useState('TRACKER');
+  const [tabKey, setTabKey] = useState('HISTORY');
+  const [modalKey, setModalKey] = useState(null);
   const [runD, setRunD] = useState()
-
-  useEffect(() => {
-    AsyncStorage.getItem('runD').then(str => {
-
-      setRunD(JSON.parse(str) || {}) 
-      // runD is Object rather than Array because 
-      // async storage does not have built in array push method, only obj merge
-    })
-  }, [])
 
   const Tab = TabD[tabKey].comp;
 
   return (
-    <View style={{ flex: 1, alignItems: 'center' }}>
+    <View style={{ flex: 1, alignItems: 'center', position: 'relative' }}>
       <Tab {...{ runD, setRunD }}></Tab>
-      <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-around' }}>
+
+      {
+        {
+          TRACKER: <Tracker close={() => setModalKey(null)} />
+        }[modalKey]
+      }
+
+      <TouchableOpacity
+        activeOpacity={.8} //The opacity of the button when it is pressed
+        style={{
+          width: 56, height: 56, borderRadius: 56, backgroundColor: 'orange',
+          position: 'absolute', zIndex: 5
+        }}
+        onPress={() => setModalKey('TRACKER')}
+      ></TouchableOpacity>
+
+      {/* <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-around' }}>
         {Object.keys(TabD).map((tk, idx) => (
           <Button title={TabD[tk].iconName} key={idx}
             onPress={() => setTabKey(TabD[tk].id)}
@@ -64,7 +72,7 @@ export default function App() {
         <Button title='test' 
           onPress={() => console.log(runD)}
         />
-      </View>
+      </View> */}
     </View >
   )
 }

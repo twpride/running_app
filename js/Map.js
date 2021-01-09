@@ -3,7 +3,7 @@ import MapboxGL from '@react-native-mapbox-gl/maps';
 
 const Map = ({ center, shape, ori }) => {
   return (
-    <MapboxGL.MapView style={{ flex: 1 }} pitchEnabled>
+    <MapboxGL.MapView style={{ flex: 1}} pitchEnabled>
       <MapboxGL.Camera
         defaultSettings={{ zoomLevel: 18 }}
         centerCoordinate={center}

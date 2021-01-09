@@ -10,7 +10,13 @@ import {
   Button,
   Text,
   View,
+  TouchableHighlight
 } from 'react-native';
+
+import { XIcon } from './Svgs'
+import Svg, {
+  Path
+} from 'react-native-svg';
 
 import { coord } from './util/testroute'
 import prettyFormat from 'pretty-format'
@@ -105,14 +111,14 @@ async function printDb() {
   try {
     const res = await AsyncStorage.getItem('runD')
     // console.log(JSON.stringify(JSON.parse(res),null,2))
-    console.log(prettyFormat(JSON.parse(res),{maxDepth:2}))
+    console.log(prettyFormat(JSON.parse(res), { maxDepth: 2 }))
     // console.dir(JSON.parse(res),{depth:1})
   } catch (e) {
     console.log(e)
   }
 }
 
-export default function Tracker({ setRunD }) {
+export default function Tracker({ setRunD, close }) {
   const [watchId, setWatchId] = useState(null)
   const [runId, setRunId] = useState(null)
   const [runTime, setRunTime] = useState(0)
@@ -137,7 +143,7 @@ export default function Tracker({ setRunD }) {
   }, [])
 
 
-  const [tr, trDispatch] = useReducer(trReducer,{})
+  const [tr, trDispatch] = useReducer(trReducer, {})
 
   const center = () => {
     hasLocationPermission().then(perm => {
@@ -215,6 +221,8 @@ export default function Tracker({ setRunD }) {
   };
 
   const addRun = async () => {
+    // data is Object rather than Array because 
+    // async storage does not have built in array push method, only obj merge
     const data = {
       [runId]: {
         waypoints: tr.waypoints,
@@ -247,12 +255,13 @@ export default function Tracker({ setRunD }) {
     trDispatch({ type: tr_act.RX_WPT, wpt })
   }
 
-
   return (
-    <>
-      <Text>{runTime}</Text>
+    <View style={{ position: 'absolute', width: '100%', height: '100%' }}>
       <View style={{ height: '80%', width: '100%' }} >
         <Map center={tr.cur && tr.cur.slice(4, 6)} shape={tr.shape} ori={ori} />
+      </View>
+      <View style={{ width: '100%', flexDirection: 'column', justifyContent: 'space-around' }}>
+        <Text>{runTime}</Text>
       </View>
       <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-around' }}>
         <Button title='start' onPress={watch} />
@@ -281,9 +290,15 @@ export default function Tracker({ setRunD }) {
         <Button title='printdb' onPress={printDb} />
         <Button title='runid' onPress={() => console.log(runId, 'runid')} />
       </View>
-    </>
+      <TouchableHighlight style={{ position: "absolute", top: 50, left: 50 }}
+        onPress={close}
+      >
+        <XIcon {...{ scale: 1, size: "32px" }} />
+      </TouchableHighlight>
+    </View>
   );
 
 }
 
 
+// const style={{position:"absolute", top:50, left:50, backgroundColor:'blue'}}

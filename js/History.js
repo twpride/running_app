@@ -27,27 +27,30 @@ function getIndex(date_ms) {
 }
 
 
-
-
-export default function History({runD}) {
+export default function History({ runD, setRunD }) {
 
   const [buckets, setBuckets] = useState(null)
 
+
   useEffect(() => {
-    setBuckets(
-      Object.values(runD).reduce(
+    AsyncStorage.getItem('runD').then(str => {
+      const obj = JSON.parse(str) || {};
+      setRunD(obj);
+      setBuckets(Object.values(obj).reduce(
         (acc, ele) => {
           const [i, j] = getIndex(ele.startTime)
           acc[i][j] = 1
           return acc
-        }, initBuckets
-      )
-    )
+        },
+        initBuckets)
+      );
+    })
   }, [])
+
 
   return (
     <>
-      <Svg height="600" width="380"
+      <Svg height="200" width="380"
       // onStartShouldSetResponder={
       //   e => console.log(e.nativeEvent)
       // }
