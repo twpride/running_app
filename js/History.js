@@ -31,51 +31,49 @@ export default function History({ runD, setRunD }) {
 
   const [buckets, setBuckets] = useState(null)
 
-
   useEffect(() => {
     AsyncStorage.getItem('runD').then(str => {
       const obj = JSON.parse(str) || {};
       setRunD(obj);
-      setBuckets(Object.values(obj).reduce(
-        (acc, ele) => {
-          const [i, j] = getIndex(ele.startTime)
-          acc[i][j] = 1
-          return acc
-        },
-        initBuckets)
-      );
     })
   }, [])
 
+  useEffect(() => {
+    if (!runD) return;
+    setBuckets(Object.values(runD).reduce(
+      (acc, ele) => {
+        const [i, j] = getIndex(ele.startTime)
+        acc[i][j] = 1
+        return acc
+      },
+      initBuckets)
+    );
+  }, [runD])
 
   return (
     <>
       <Svg height="200" width="380"
-      // onStartShouldSetResponder={
-      //   e => console.log(e.nativeEvent)
-      // }
+        onStartShouldSetResponder={e => console.log(e.nativeEvent)}
       >
-        {buckets && buckets.map((eli, i) => (
-          eli.map((elj, j) => (
-            <Rect
-              key={i.toString() + j.toString()}
-              x={i * PITCH}
-              y={j * PITCH}
-
-              height={SIZE}
-              width={SIZE}
-
-              fill={COLORS[buckets[i][j]]}
-            />
+        {
+          buckets && buckets.map((eli, i) => (
+            eli.map((elj, j) => (
+              <Rect
+                key={i.toString() + j.toString()}
+                x={i * PITCH}
+                y={j * PITCH}
+                height={SIZE}
+                width={SIZE}
+                fill={COLORS[buckets[i][j]]}
+              />
+            ))
           ))
-        )
-        )}
+        }
       </Svg>
       {
         runD && Object.keys(runD).map((key, idx) => (
           <Text key={idx}>{runD[key].distance} {runD[key].time} </Text>
-        )
-        )
+        ))
       }
     </>
   );

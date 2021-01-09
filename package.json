@@ -12,7 +12,6 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.13.2",
     "@react-native-mapbox-gl/maps": "^8.1.0-rc10",
-    "@voximplant/react-native-foreground-service": "^2.0.0",
     "react": "16.13.1",
     "react-native": "0.63.4",
     "react-native-geolocation-service": "^5.1.1",

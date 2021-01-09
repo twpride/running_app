@@ -1,12 +1,9 @@
-import React, { createContext, useEffect, useState } from 'react';
-import { Button, ImagePropTypes, Text, View, TouchableOpacity } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState } from 'react';
+import { View, TouchableOpacity } from 'react-native';
 
 import Tracker from './Tracker'
 import History from './History'
 import Tab3 from './Tab3'
-import Tab2 from './Tab2'
-import Tab1 from './Tab1'
 
 
 
@@ -50,7 +47,7 @@ export default function App() {
 
       {
         {
-          TRACKER: <Tracker close={() => setModalKey(null)} />
+          TRACKER: <Tracker close={() => setModalKey(null)} {...{ runD, setRunD }}/>
         }[modalKey]
       }
 

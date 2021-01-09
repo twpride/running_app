@@ -28,7 +28,7 @@
         </intent-filter>
       </activity>
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
-      <service android:name="com.voximplant.foregroundservice.VIForegroundService"> </service>
+      <service android:name=".TrackerService" />
     </application>
 
 </manifest>
