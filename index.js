@@ -10,6 +10,3 @@ import {name as appName} from './app.json';
 AppRegistry.registerComponent(appName, () => App);
 // AppRegistry.registerComponent(appName, () => Tracker);
 
-AppRegistry.registerHeadlessTask('TrackerTask', () =>
-  require('./js/util/trackerService')
-);

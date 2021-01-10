@@ -3,7 +3,7 @@ import RNSimpleCompass from 'react-native-simple-compass';
 import React, { useEffect, useState, useReducer } from 'react';
 import * as api from './util/api'
 import MapboxGL from '@react-native-mapbox-gl/maps';
-import { hasLocationPermission} from './util/sys'
+import { hasLocationPermission, startForegroundService, stopForegroundService } from './util/sys'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Map from './Map'
 import {
@@ -17,9 +17,8 @@ import { XIcon } from './Svgs'
 
 import { coord } from './util/testroute'
 import prettyFormat from 'pretty-format'
-
-const watch = require('./util/trackerService')
-
+import { convertSecsToMins, distance } from './util/dataProc';
+import BackgroundTimer from 'react-native-background-timer';
 
 
 
@@ -75,11 +74,44 @@ export default function Tracker({ setRunD, runD, close }) {
     );
   };
 
+  const watch = async () => {
+    await startForegroundService();
+    trDispatch({ type: tr_act.START_RUN })
 
+    setWatchId(
+      [
+        BackgroundTimer.setInterval(function () {
+          setRunTime(state => state + 1)
+        }, 1000),
+        Geolocation.watchPosition(
+          (wpt) => {
+            console.log(wpt)
+            trDispatch({ type: tr_act.RX_WPT, wpt })
+          },
+          (error) => {
+            console.log(error);
+          },
+          {
+            accuracy: {
+              android: 'high',
+              ios: 'bestForNavigation',
+            },
+            enableHighAccuracy: true,
+            distanceFilter: 0,
+            interval: 5000,
+            fastestInterval: 2000,
+            forceRequestLocation: true,
+            showLocationDialog: true,
+          },
+        )
+      ]
+    );
+  };
 
   const stopWatch = () => {
     if (watchId !== null) {
-      clearInterval(watchId[0])
+      stopForegroundService();
+      BackgroundTimer.clearInterval(watchId[0])
       Geolocation.clearWatch(watchId[1]);
       setWatchId(null)
       // api.addRun(tr.waypoints)
@@ -127,22 +159,22 @@ export default function Tracker({ setRunD, runD, close }) {
         <Map center={tr.cur && tr.cur.slice(4, 6)} shape={tr.shape} ori={ori} />
       </View>
       <View style={{ width: '100%', flexDirection: 'column', justifyContent: 'space-around' }}>
-        <Text>{runTime}</Text>
+        <Text>{convertSecsToMins(runTime)}</Text>
         <Text>{tr.distance}</Text>
       </View>
       <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-around' }}>
-        <Button title='start' onPress={() => watch(trDispatch, setWatchId, setRunTime)} />
+        <Button title='start' onPress={watch} />
         <Button title='stop' onPress={stopWatch} />
         <Button title='center' onPress={center} />
       </View>
-      {/* <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-around' }}>
-        <Button title='update' onPress={update} />
-        <Button title='man stop' onPress={() => {
+      <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-around' }}>
+        {/* <Button title='update' onPress={update} /> */}
+        {/* <Button title='man stop' onPress={() => {
           console.log(tr.distance, 'dist')
           // api.addRun(tr.waypoints)
           addRun()
-        }} />
-        <Button title='man start' onPress={() => {
+        }} /> */}
+        {/* <Button title='man start' onPress={() => {
           trDispatch({
             type: tr_act.RX_POS, wpt: {
               coords: {
@@ -152,10 +184,10 @@ export default function Tracker({ setRunD, runD, close }) {
             }
           })
           trDispatch({ type: tr_act.START_RUN })
-        }} />
+        }} /> */}
         <Button title='clear' onPress={() => AsyncStorage.clear()} />
-        <Button title='printdb' onPress={printDb} />
-      </View> */}
+        {/* <Button title='printdb' onPress={printDb} /> */}
+      </View>
       <TouchableHighlight style={{ position: "absolute", top: 50, left: 50 }}
         onPress={close}
       >
@@ -176,15 +208,6 @@ const legend = {
   longitude: 4,
   latitude: 5,
   timestamp: 6
-}
-
-function distance(lon1, lat1, lon2, lat2) {
-  var p = 0.017453292519943295;    // Math.PI / 180
-  var c = Math.cos;
-  var a = 0.5 - c((lat2 - lat1) * p) / 2 +
-    c(lat1 * p) * c(lat2 * p) *
-    (1 - c((lon2 - lon1) * p)) / 2;
-  return 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
 }
 
 

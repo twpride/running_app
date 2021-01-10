@@ -38,16 +38,16 @@ export default function App() {
   const [tabKey, setTabKey] = useState('HISTORY');
   const [modalKey, setModalKey] = useState(null);
   const [runD, setRunD] = useState()
-
+  const [usingMiles, setUsingMiles] = useState(true)
   const Tab = TabD[tabKey].comp;
 
   return (
     <View style={{ flex: 1, alignItems: 'center', position: 'relative' }}>
-      <Tab {...{ runD, setRunD }}></Tab>
+      <Tab {...{ runD, setRunD,usingMiles }}></Tab>
 
       {
         {
-          TRACKER: <Tracker close={() => setModalKey(null)} {...{ runD, setRunD }}/>
+          TRACKER: <Tracker close={() => setModalKey(null)} {...{ runD, setRunD, usingMiles }}/>
         }[modalKey]
       }
 

@@ -12,6 +12,7 @@ import {
   View,
 } from 'react-native';
 
+import VIForegroundService from '@voximplant/react-native-foreground-service';
 
 const hasLocationPermissionIOS = async () => {
   const openSetting = () => {
@@ -85,3 +86,25 @@ export const hasLocationPermission = async () => {
   return false;
 };
 
+export const startForegroundService = async () => {
+  if (Platform.Version >= 26) {
+    await VIForegroundService.createNotificationChannel({
+      id: 'locationChannel',
+      name: 'Location Tracking Channel',
+      description: 'Tracks location of user',
+      enableVibration: false,
+    });
+  }
+
+  return VIForegroundService.startService({
+    channelId: 'locationChannel',
+    id: 420,
+    title: 'run_app',
+    text: 'Tracking location updates',
+    icon: 'ic_launcher',
+  });
+};
+
+export const stopForegroundService = () => {
+  VIForegroundService.stopService().catch((err) => err);
+}; 
