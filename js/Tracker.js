@@ -1,5 +1,5 @@
 import Geolocation from 'react-native-geolocation-service';
-import RNSimpleCompass from 'react-native-simple-compass';
+// import RNSimpleCompass from 'react-native-simple-compass';
 import React, { useEffect, useState, useReducer } from 'react';
 import * as api from './util/api'
 import MapboxGL from '@react-native-mapbox-gl/maps';
@@ -29,11 +29,11 @@ export default function Tracker({ setRunD, runD, close }) {
 
   useEffect(() => {
 
-    RNSimpleCompass.start(22.5, setOri); // first arg is deg throttling thresh
+    // RNSimpleCompass.start(22.5, setOri); // first arg is deg throttling thresh
     center()
 
     return () => {
-      RNSimpleCompass.stop();
+      // RNSimpleCompass.stop();
       if (watchId !== null) {
         clearInterval(watchId[0])
         Geolocation.stopObserving()

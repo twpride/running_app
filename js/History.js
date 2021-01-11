@@ -90,10 +90,10 @@ export default function History({ runD, setRunD, usingMiles }) {
                   console.log(
                     filteredRun.reduce(
                       (acc, ele, idx, coord) => {
-                        if (idx ==0) return 0;
-                        return acc + distance(...coord[idx],...coord[idx-1]) 
+                        if (idx == 0) return 0;
+                        return acc + distance(...coord[idx], ...coord[idx - 1])
                       }, 0
-                    )/1.609344, 'dist'
+                    ) / 1.609344, 'dist'
                   )
                   setRunView(filteredRun)
                 }
@@ -109,14 +109,14 @@ export default function History({ runD, setRunD, usingMiles }) {
                 )
               }
             </Text>
-            <Button title='testroute' onPress={
-              () => {
-                setRunView(coord)
-              }
-            } />
           </View>
         ))
       }
+      <Button title='testroute' onPress={
+        () => {
+          setRunView(coord)
+        }
+      } />
     </>
   );
 }
