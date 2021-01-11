@@ -11,7 +11,7 @@ import {
   ToastAndroid,
   View,
 } from 'react-native';
-
+import Geolocation from 'react-native-geolocation-service';
 import VIForegroundService from '@voximplant/react-native-foreground-service';
 
 const hasLocationPermissionIOS = async () => {
