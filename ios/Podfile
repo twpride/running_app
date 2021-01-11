@@ -21,6 +21,8 @@ target 'run_app' do
   post_install do |installer|
     flipper_post_install(installer)
   end
+
+  pod 'react-native-simple-compass', :path => '../node_modules/@kevinsperrine/react-native-simple-compass'
 end
 
 target 'run_app-tvOS' do

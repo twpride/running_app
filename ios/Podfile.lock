@@ -244,23 +244,25 @@ PODS:
     - React-Core
   - react-native-geolocation-service (5.1.1):
     - React
-  - react-native-mapbox-gl (8.1.0-rc10):
+  - react-native-mapbox-gl (8.1.0):
     - "@react-native-mapbox-gl-mapbox-static (~> 5.9.0)"
     - Mapbox-iOS-SDK (~> 5.9.0)
     - React
     - React-Core
-    - react-native-mapbox-gl/DynamicLibrary (= 8.1.0-rc10)
-    - react-native-mapbox-gl/StaticLibraryFixer (= 8.1.0-rc10)
-  - react-native-mapbox-gl/DynamicLibrary (8.1.0-rc10):
+    - react-native-mapbox-gl/DynamicLibrary (= 8.1.0)
+    - react-native-mapbox-gl/StaticLibraryFixer (= 8.1.0)
+  - react-native-mapbox-gl/DynamicLibrary (8.1.0):
     - "@react-native-mapbox-gl-mapbox-static (~> 5.9.0)"
     - Mapbox-iOS-SDK (~> 5.9.0)
     - React
     - React-Core
-  - react-native-mapbox-gl/StaticLibraryFixer (8.1.0-rc10):
+  - react-native-mapbox-gl/StaticLibraryFixer (8.1.0):
     - "@react-native-mapbox-gl-mapbox-static (~> 5.9.0)"
     - Mapbox-iOS-SDK (~> 5.9.0)
     - React
     - React-Core
+  - react-native-simple-compass (2.0.4):
+    - React
   - React-RCTActionSheet (0.63.4):
     - React-Core/RCTActionSheetHeaders (= 0.63.4)
   - React-RCTAnimation (0.63.4):
@@ -369,6 +371,7 @@ DEPENDENCIES:
   - react-native-background-timer (from `../node_modules/react-native-background-timer`)
   - react-native-geolocation-service (from `../node_modules/react-native-geolocation-service`)
   - "react-native-mapbox-gl (from `../node_modules/@react-native-mapbox-gl/maps`)"
+  - "react-native-simple-compass (from `../node_modules/@kevinsperrine/react-native-simple-compass`)"
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../node_modules/react-native/Libraries/NativeAnimation`)
   - React-RCTBlob (from `../node_modules/react-native/Libraries/Blob`)
@@ -438,6 +441,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-geolocation-service"
   react-native-mapbox-gl:
     :path: "../node_modules/@react-native-mapbox-gl/maps"
+  react-native-simple-compass:
+    :path: "../node_modules/@kevinsperrine/react-native-simple-compass"
   React-RCTActionSheet:
     :path: "../node_modules/react-native/Libraries/ActionSheetIOS"
   React-RCTAnimation:
@@ -495,9 +500,10 @@ SPEC CHECKSUMS:
   React-jsi: a0418934cf48f25b485631deb27c64dc40fb4c31
   React-jsiexecutor: 93bd528844ad21dc07aab1c67cb10abae6df6949
   React-jsinspector: 58aef7155bc9a9683f5b60b35eccea8722a4f53a
-  react-native-background-timer: 117fffdc9b0d6f144444bb49029f94275a45fdb5
+  react-native-background-timer: 17ea5e06803401a379ebf1f20505b793ac44d0fe
   react-native-geolocation-service: f33626f1ae12381ca2ae60f98b2f5edd676bf95a
-  react-native-mapbox-gl: de3af5d5dea2882fcf8b5720cb1656eeecffd1fc
+  react-native-mapbox-gl: eec7e5be5b874cfceb79fcfe24d595411015153a
+  react-native-simple-compass: 48b585c7c79f57c186769f913bc0ae62faaab104
   React-RCTActionSheet: 89a0ca9f4a06c1f93c26067af074ccdce0f40336
   React-RCTAnimation: 1bde3ecc0c104c55df246eda516e0deb03c4e49b
   React-RCTBlob: a97d378b527740cc667e03ebfa183a75231ab0f0
@@ -508,11 +514,11 @@ SPEC CHECKSUMS:
   React-RCTText: 5c51df3f08cb9dedc6e790161195d12bac06101c
   React-RCTVibration: ae4f914cfe8de7d4de95ae1ea6cc8f6315d73d9d
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
-  RNCAsyncStorage: bc2f81cc1df90c267ce9ed30bb2dbc93b945a8ee
+  RNCAsyncStorage: 05bae7ecfab1cbd5441993f1ca098f7c3b3f8d0e
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 0ab443a832eb5204cc89d93115af4561bfc43e75
+PODFILE CHECKSUM: 3784a589378cbcb3f70de29f23822d7fa88b35b9
 
 COCOAPODS: 1.10.1
