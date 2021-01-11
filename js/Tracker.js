@@ -29,7 +29,7 @@ export default function Tracker({ setRunD, runD, close }) {
 
   useEffect(() => {
 
-    RNSimpleCompass.start(22.5, setOri); // first arg is deg throttling thresh
+    RNSimpleCompass.start(22.5, (res)=>setOri(res.degree)); // first arg is deg throttling thresh
     center()
 
     return () => {
@@ -156,7 +156,7 @@ export default function Tracker({ setRunD, runD, close }) {
   return (
     <View style={{ position: 'absolute', width: '100%', height: '100%' }}>
       <View style={{ height: '80%', width: '100%' }} >
-        <Map center={tr.cur && tr.cur.slice(4, 6)} shape={tr.shape} ori={ori} />
+        <Map center={tr.cur && tr.cur.slice(4, 6)} shape={tr.shape} ori={ori+25} />
       </View>
       <View style={{ width: '100%', flexDirection: 'column', justifyContent: 'space-around' }}>
         <Text>{convertSecsToMins(runTime)}</Text>
@@ -186,7 +186,7 @@ export default function Tracker({ setRunD, runD, close }) {
           trDispatch({ type: tr_act.START_RUN })
         }} /> */}
         <Button title='clear' onPress={() => AsyncStorage.clear()} />
-        {/* <Button title='printdb' onPress={printDb} /> */}
+        <Button title='testori' onPress={()=> console.log(ori)} />
       </View>
       <TouchableHighlight style={{ position: "absolute", top: 50, left: 50 }}
         onPress={close}
